@@ -30,6 +30,14 @@ public class StateController : MonoBehaviour
 
 
 
+    [Header("Enemy Spawns")]
+    public GameObject Spawner;
+    public GameObject[] Enemies;
+    public GameObject[] Places;
+
+
+
+
 
     void Start()
     {

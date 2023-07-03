@@ -854,6 +854,16 @@ MonoBehaviour:
   battleUI: {fileID: 229088426}
   endBattleUI: {fileID: 954985055}
   waveText: {fileID: 1057291024}
+  Spawner: {fileID: 0}
+  Enemies:
+  - {fileID: 749508293408193922, guid: c08773ec57a7be149b4e91082497b214, type: 3}
+  - {fileID: 2474744015176719470, guid: 6a372db404115574190c425e45d25e9c, type: 3}
+  Places:
+  - {fileID: 470127192}
+  - {fileID: 731130891}
+  - {fileID: 1135334658}
+  - {fileID: 1352695935}
+  - {fileID: 1749806508}
 --- !u!4 &1013804928
 Transform:
   m_ObjectHideFlags: 0
