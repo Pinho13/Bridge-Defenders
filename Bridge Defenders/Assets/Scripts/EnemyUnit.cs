@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class EnemyUnit : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public int MaxHealth;
+    public int CurrentHealth;
+
+    
+
     void Start()
     {
         
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         
