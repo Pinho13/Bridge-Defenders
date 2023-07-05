@@ -38,7 +38,7 @@ public class UpgradeScript : MonoBehaviour
 
     void ActivatePanel()
     {
-        if(Distance < maxDistance)
+        if(Distance < maxDistance && SC.state == States.Lobby)
         {
             sr.color = Color.gray;
             SC.PLayerToShop();

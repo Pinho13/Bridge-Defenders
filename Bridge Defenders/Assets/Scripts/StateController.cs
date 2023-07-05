@@ -57,10 +57,15 @@ public class StateController : MonoBehaviour
     public GameObject[] HardEnemies;
     public GameObject[] BossEnemies;
     public List<EnemiePoints> places;
-    public static List<GameObject> SpawnedEnemies = new List<GameObject>();
-    private int numberOfEnemiesToSpawn;
-    public float enemySpeed;
+    public List<GameObject> SpawnedEnemies = new List<GameObject>();
+    public int numberOfEnemiesToSpawn;
     private int randomNumber;
+
+
+
+
+    [Header("Player Turn")]
+    [SerializeField]private TMP_Text turnText;
 
 
 
@@ -84,8 +89,8 @@ public class StateController : MonoBehaviour
         checkpoints();
         lost();
         changeDifficulty();
-        NumberOfEnemies();
-        SpawningEnemies();
+        setup();
+        playerTurn();
     }
 
     public void startGame()
@@ -100,6 +105,7 @@ public class StateController : MonoBehaviour
             lobbyUI.SetActive(false);
             Camera.transform.position = Vector3.Lerp(Camera.transform.position, Battle.position, cameraVelocity * Time.deltaTime);
             PlayerPos.position = Vector3.Lerp(PlayerPos.position, Fight.position, cameraVelocity * Time.deltaTime);
+            NumberOfEnemies();
         }
         if(state == States.Start && Camera.transform.position.x >= Battle.position.x-1.5)
         {
@@ -111,8 +117,15 @@ public class StateController : MonoBehaviour
     {
         if(state == States.Won)
         {
-            AddWave();
-            endBattleUI.SetActive(true);
+            if(wave % 3 == 0 && wave != 0)
+            {
+                AddWave();
+                endBattleUI.SetActive(true);
+            }else
+            {
+                AddWave();
+                state = States.Start;
+            }
         }
     }
 
@@ -231,86 +244,52 @@ public class StateController : MonoBehaviour
 
     void SpawningEnemies()
     {
+        if (numberOfEnemiesToSpawn > 0)
+        {
+            if(wave == 0)
+            {
+                GameObject enemy = Instantiate(EasyEnemies[0], Spawner.position, Quaternion.identity);
+                SpawnedEnemies.Add(enemy);
+            }
+            if(wave > 0 && wave <= 3)
+            {
+                GameObject enemy = Instantiate(EasyEnemies[Random.Range(0, EasyEnemies.Length)], Spawner.position, Quaternion.identity);
+                SpawnedEnemies.Add(enemy);
+            }
+            if(wave > 3 && wave <= 9)
+            {
+                GameObject enemy = Instantiate(MediumEnemies[Random.Range(0, MediumEnemies.Length)], Spawner.position, Quaternion.identity);
+                SpawnedEnemies.Add(enemy);
+            }
+            if(wave > 15 && wave % 16 != 0)
+            {
+                GameObject enemy = Instantiate(HardEnemies[Random.Range(0, HardEnemies.Length)], Spawner.position, Quaternion.identity);
+                SpawnedEnemies.Add(enemy);
+            }
+            if(wave % 16 == 0 && wave != 0)
+            {
+                GameObject enemy = Instantiate(BossEnemies[Random.Range(0, BossEnemies.Length)], Spawner.position, Quaternion.identity);
+                SpawnedEnemies.Add(enemy);
+            }
+            numberOfEnemiesToSpawn -= 1;
+        }
+    }
+    void setup()
+    {
         if(state == States.Setup)
         {
-            if(wave != 16 || wave != 32 || wave != 48)
+            SpawningEnemies();
+            foreach(GameObject enemy in SpawnedEnemies)
             {
-                if(wave == 0 && numberOfEnemiesToSpawn > 0)
-                {
-                GameObject enemy = Instantiate(EasyEnemies[0], Spawner);
                 randomNumber = Random.Range(0, places.Count);
                 while(places[randomNumber].Occupied)
                 {
                     randomNumber = Random.Range(0, places.Count);
                 }
-                enemy.GetComponent<Transform>().position = Vector3.Lerp(enemy.GetComponent<Transform>().position, places[randomNumber].point.position, enemySpeed * Time.deltaTime);
-                places[randomNumber].Occupied = true;
-                if(Vector2.Distance(enemy.GetComponent<Transform>().position, places[randomNumber].point.position) > 1)
-                {
-                    enemy.GetComponent<Transform>().position = Vector3.Lerp(enemy.GetComponent<Transform>().position, places[randomNumber].point.position, enemySpeed * Time.deltaTime);
-                }
-                SpawnedEnemies.Add(enemy);
-                numberOfEnemiesToSpawn -= 1;
-            }else if(wave <= 3 && numberOfEnemiesToSpawn > 0)
-            {
-                GameObject enemy = Instantiate(EasyEnemies[Random.Range(0, EasyEnemies.Length)], Spawner);
-                randomNumber = Random.Range(0, places.Count);
-                while(places[randomNumber].Occupied)
-                {
-                    randomNumber = Random.Range(0, places.Count);
-                }
-                enemy.GetComponent<Transform>().position = Vector3.Lerp(enemy.GetComponent<Transform>().position, places[randomNumber].point.position, enemySpeed * Time.deltaTime);
-                places[randomNumber].Occupied = true;
-                if(Vector2.Distance(enemy.GetComponent<Transform>().position, places[randomNumber].point.position) > 1)
-                {
-                    enemy.GetComponent<Transform>().position = Vector3.Lerp(enemy.GetComponent<Transform>().position, places[randomNumber].point.position, enemySpeed * Time.deltaTime);
-                }
-                SpawnedEnemies.Add(enemy);
-                numberOfEnemiesToSpawn -= 1;
-            }else if(wave <= 9 && numberOfEnemiesToSpawn > 0)
-            {
-                GameObject enemy = Instantiate(MediumEnemies[Random.Range(0, MediumEnemies.Length)], Spawner);
-                randomNumber = Random.Range(0, places.Count);
-                while(places[randomNumber].Occupied)
-                {
-                    randomNumber = Random.Range(0, places.Count);
-                }
-                enemy.GetComponent<Transform>().position = Vector3.Lerp(enemy.GetComponent<Transform>().position, places[randomNumber].point.position, enemySpeed * Time.deltaTime);
-                places[randomNumber].Occupied = true;
-                if(Vector2.Distance(enemy.GetComponent<Transform>().position, places[randomNumber].point.position) > 1)
-                {
-                    enemy.GetComponent<Transform>().position = Vector3.Lerp(enemy.GetComponent<Transform>().position, places[randomNumber].point.position, enemySpeed * Time.deltaTime);
-                }
-                SpawnedEnemies.Add(enemy);
-                numberOfEnemiesToSpawn -= 1;
-            }else if(wave >= 9 && numberOfEnemiesToSpawn > 0)
-            {
-                GameObject enemy = Instantiate(HardEnemies[Random.Range(0, HardEnemies.Length)], Spawner);
-                randomNumber = Random.Range(0, places.Count);
-                while(places[randomNumber].Occupied)
-                {
-                    randomNumber = Random.Range(0, places.Count);
-                }
-                enemy.GetComponent<Transform>().position = Vector3.Lerp(enemy.GetComponent<Transform>().position, places[randomNumber].point.position, enemySpeed * Time.deltaTime);
-                places[randomNumber].Occupied = true;
-                if(Vector2.Distance(enemy.GetComponent<Transform>().position, places[randomNumber].point.position) > 1)
-                {
-                    enemy.GetComponent<Transform>().position = Vector3.Lerp(enemy.GetComponent<Transform>().position, places[randomNumber].point.position, enemySpeed * Time.deltaTime);
-                }
-                SpawnedEnemies.Add(enemy);
-                numberOfEnemiesToSpawn -= 1;
+                enemy.GetComponent<EnemyUnit>().PosToMove = places[randomNumber].point.transform.position;
+                enemy.GetComponent<EnemyUnit>().Movable = true;
             }
-            }else if(numberOfEnemiesToSpawn > 0)
-            {
-                GameObject enemy = Instantiate(BossEnemies[Random.Range(0, BossEnemies.Length)], Spawner);
-                enemy.GetComponent<Transform>().position = Vector3.Lerp(enemy.GetComponent<Transform>().position, BossPoint.position, enemySpeed * Time.deltaTime);
-                if(Vector2.Distance(enemy.GetComponent<Transform>().position, places[randomNumber].point.position) > 1)
-                {
-                    enemy.GetComponent<Transform>().position = Vector3.Lerp(enemy.GetComponent<Transform>().position, places[randomNumber].point.position, enemySpeed * Time.deltaTime);
-                }
-                SpawnedEnemies.Add(enemy);
-                numberOfEnemiesToSpawn -= 1;
-            }
+            state = States.PlayerTurn;
         }
     }
 
@@ -340,6 +319,18 @@ public class StateController : MonoBehaviour
         }else if(wave % 16 == 0)
         {
             numberOfEnemiesToSpawn = 1;
+        }
+    }
+
+    void playerTurn()
+    {
+        if(state == States.PlayerTurn)
+        {
+            turnText.text = "Your Turn";
+            foreach(GameObject enemy in SpawnedEnemies)
+            {
+                
+            }
         }
     }
 
