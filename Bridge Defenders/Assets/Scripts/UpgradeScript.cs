@@ -7,7 +7,7 @@ public class UpgradeScript : MonoBehaviour
 
     public GameObject Panel;
     private bool activePanel;
-    public StateController SC;
+    [SerializeField]private PlayerMovement pm;
 
 
     [Header("Distances")]
@@ -38,19 +38,19 @@ public class UpgradeScript : MonoBehaviour
 
     void ActivatePanel()
     {
-        if(Distance < maxDistance && SC.state == States.Lobby)
+        if(Distance < maxDistance)
         {
             sr.color = Color.gray;
-            SC.PLayerToShop();
+            pm.shop();
             if(Input.GetMouseButtonDown(0))
             {
                 Panel.SetActive(true);
                 activePanel = true;
             }
-        }else if(SC.state == States.Lobby && !activePanel)
+        }else if(!activePanel && !pm.battle)
         {
             sr.color = Color.white;
-            SC.PlayerToLobby();
+            pm.lobby();
         }
     }
 

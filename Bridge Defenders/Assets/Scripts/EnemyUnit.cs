@@ -1,31 +1,63 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EnemyUnit : MonoBehaviour
 {
-    public int MaxHealth;
-    public int CurrentHealth;
+    //combat system reference
+    CombatSystem combatSystem; 
 
-    public StateController SC;
-    public Vector3 PosToMove;
-    public bool Movable;
+
+    [Header("Health")]
+    public float MaxHealth;
+    [HideInInspector] public float CurrentHealth;
+
+
+    [Header("Move to Battle")]
+    [HideInInspector] public Vector3 PosToMove;
+    [HideInInspector] public bool Movable;
     [SerializeField]private float speed;
-    private Canvas canvas;
+
+
+
+    [Header("Health Bar")]
     [SerializeField]private GameObject healthbar;
+    [SerializeField]private GameObject fullHealthBar;
+    [SerializeField]private float yBarSize;
+    public Action<EnemyUnit> onDeath;
+
+
+
+
+    [Header("Damage Player")]
+    private PlayerUnit Player;
+    public float Damage;
+    public bool Damaged;
+
+
+
+    [Header("Render")]
+    SpriteRenderer spriteRenderer;
+
 
 
     
 
     void Start()
     {
-
+        CurrentHealth = MaxHealth;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        Player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerUnit>();
+        combatSystem = GameObject.FindGameObjectWithTag("Player").GetComponent<CombatSystem>();
     }
 
 
     void Update()
     {
         MoveToPoint();
+        healthBar();
     }
 
     void MoveToPoint()
@@ -42,6 +74,50 @@ public class EnemyUnit : MonoBehaviour
 
     void healthBar()
     {
-        healthbar.transform.localScale = new Vector3(healthbar.transform.localScale.x, (CurrentHealth * 0.15f) / MaxHealth, healthbar.transform.localScale.y);
+        if(CurrentHealth <= 0)
+        {
+            CurrentHealth = 0;
+            fullHealthBar.SetActive(false);
+            onDeath.Invoke(this);
+            Destroy(this.gameObject);
+        }
+
+        if(CurrentHealth > 0)
+        {
+            fullHealthBar.SetActive(true);
+            healthbar.transform.localScale = new Vector3(((CurrentHealth * yBarSize) / MaxHealth), healthbar.transform.localScale.y, healthbar.transform.localScale.y);
+        }
+    }
+
+    public void atack()
+    {
+        if(!Damaged)
+        {
+            Player.CurrentHealth -= Damage;
+            Damaged = true;
+        }
+    }
+
+    void OnMouseOver()
+    {
+        if(combatSystem.turn == Turns.PlayerTurn)
+        {
+            spriteRenderer.color = Color.black;
+            if(Input.GetMouseButtonDown(0))
+            {
+                combatSystem.battleUI.SetActive(true);
+            }
+        }
+    }
+
+
+    void OnMouseExit()
+    {
+        if(combatSystem.turn == Turns.PlayerTurn)
+        {
+            spriteRenderer.color = Color.grey;
+        }
     }
 }
+
+

@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public enum States { Lobby, Backing, Start, Setup, PlayerTurn, EnemyTurn, Won, Lost}
+public enum States { Lobby, Backing, Start, Setup, Waiting, PlayerTurn, EnemyTurn, Won, Lost}
 
 public class StateController : MonoBehaviour
 {
     public States state;
 
+    [Header("Enemy Settings")]
+    [SerializeField] int enemyIncrease;
+    [SerializeField] int maxEnemies;
+    [SerializeField] Enemies[] enemies;
+    Dictionary<EnemyDifficulty,Enemies> enemyDic;
 
 
     [Header("Wave")]
@@ -33,7 +38,7 @@ public class StateController : MonoBehaviour
 
 
     [Header("Camera")]
-    public GameObject Camera;
+    public GameObject _camera;
     public Transform Lobby;
     public Transform Battle;
     public float cameraVelocity;
@@ -43,6 +48,7 @@ public class StateController : MonoBehaviour
     [Header("UI")]
     public GameObject lobbyUI;
     public GameObject battleUI;
+    public GameObject FightUI;
     public GameObject endBattleUI;
     public GameObject DifficultyChanger;
     public TMP_Text waveText;
@@ -56,27 +62,49 @@ public class StateController : MonoBehaviour
     public GameObject[] MediumEnemies;
     public GameObject[] HardEnemies;
     public GameObject[] BossEnemies;
-    public List<EnemiePoints> places;
     public List<GameObject> SpawnedEnemies = new List<GameObject>();
     public int numberOfEnemiesToSpawn;
     private int randomNumber;
+    public int numberOfDeadEnemies;
 
 
 
 
     [Header("Player Turn")]
     [SerializeField]private TMP_Text turnText;
+    [SerializeField]private float Distance;
+    [SerializeField]private Vector2 mousePos;
+    public GameObject enemySelected;
 
 
 
 
+void Start()=>Init();
 
-    void Start()
+    void Init()
     {
-        state = States.Lobby;
-        pu = Player.GetComponent<PlayerUnit>();
-        PlayerPos = Player.GetComponent<Transform>();
+        InitDic();
     }
+
+    void InitDic()
+    {
+        enemyDic = new();
+        if(enemies==null || enemies.Length == 0) return;
+
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            var enemy = enemies[i];
+            if(enemy==null || enemyDic.ContainsKey(enemy.Difficulty)) continue;
+
+            enemyDic.Add(enemy.Difficulty,enemy);
+        }
+    }
+    //void Start()
+    //{
+        //state = States.Lobby;
+        //pu = Player.GetComponent<PlayerUnit>();
+        //PlayerPos = Player.GetComponent<Transform>();
+    //}
 
 
     void Update()
@@ -89,8 +117,10 @@ public class StateController : MonoBehaviour
         checkpoints();
         lost();
         changeDifficulty();
-        setup();
         playerTurn();
+        distance();
+        enemyTurn();
+        combat();
     }
 
     public void startGame()
@@ -102,12 +132,13 @@ public class StateController : MonoBehaviour
     {
         if(state == States.Start)
         {
+            waveCounted = false;
             lobbyUI.SetActive(false);
-            Camera.transform.position = Vector3.Lerp(Camera.transform.position, Battle.position, cameraVelocity * Time.deltaTime);
+            _camera.transform.position = Vector3.Lerp(_camera.transform.position, Battle.position, cameraVelocity * Time.deltaTime);
             PlayerPos.position = Vector3.Lerp(PlayerPos.position, Fight.position, cameraVelocity * Time.deltaTime);
             NumberOfEnemies();
         }
-        if(state == States.Start && Camera.transform.position.x >= Battle.position.x-1.5)
+        if(state == States.Start && _camera.transform.position.x >= Battle.position.x-1.5)
         {
             state = States.Setup;
         }
@@ -117,6 +148,7 @@ public class StateController : MonoBehaviour
     {
         if(state == States.Won)
         {
+            battleUI.SetActive(false);
             if(wave % 3 == 0 && wave != 0)
             {
                 AddWave();
@@ -140,9 +172,9 @@ public class StateController : MonoBehaviour
         if(state == States.Backing)
         {
             endBattleUI.SetActive(false);
-            Camera.transform.position = Vector3.Lerp(Camera.transform.position, Lobby.position, cameraVelocity * Time.deltaTime);
+            _camera.transform.position = Vector3.Lerp(_camera.transform.position, Lobby.position, cameraVelocity * Time.deltaTime);
             PlayerToLobby();
-            if(Camera.transform.position.x <= 0)
+            if(_camera.transform.position.x <= 0)
             {
                 state = States.Lobby;
                 lobbyUI.SetActive(true);
@@ -190,7 +222,7 @@ public class StateController : MonoBehaviour
     {
         if(state == States.Lost)
         {
-            endBattleUI.SetActive(true);
+            endBattleUI.SetActive(false);
             if(normalDifficulty)
             {
                 wave = waveCheckpoint;
@@ -244,7 +276,7 @@ public class StateController : MonoBehaviour
 
     void SpawningEnemies()
     {
-        if (numberOfEnemiesToSpawn > 0)
+        while (numberOfEnemiesToSpawn > 0)
         {
             if(wave == 0)
             {
@@ -272,24 +304,6 @@ public class StateController : MonoBehaviour
                 SpawnedEnemies.Add(enemy);
             }
             numberOfEnemiesToSpawn -= 1;
-        }
-    }
-    void setup()
-    {
-        if(state == States.Setup)
-        {
-            SpawningEnemies();
-            foreach(GameObject enemy in SpawnedEnemies)
-            {
-                randomNumber = Random.Range(0, places.Count);
-                while(places[randomNumber].Occupied)
-                {
-                    randomNumber = Random.Range(0, places.Count);
-                }
-                enemy.GetComponent<EnemyUnit>().PosToMove = places[randomNumber].point.transform.position;
-                enemy.GetComponent<EnemyUnit>().Movable = true;
-            }
-            state = States.PlayerTurn;
         }
     }
 
@@ -326,19 +340,62 @@ public class StateController : MonoBehaviour
     {
         if(state == States.PlayerTurn)
         {
+            foreach(GameObject enemy in SpawnedEnemies)
+            {
+                enemy.GetComponent<EnemyUnit>().Damaged=false;
+            }
             turnText.text = "Your Turn";
             foreach(GameObject enemy in SpawnedEnemies)
             {
-                
+                Distance = Vector2.Distance(enemy.transform.position, mousePos);
+                if(Distance < 1)
+                {
+                    enemy.GetComponent<SpriteRenderer>().color = Color.blue;
+                    if(Input.GetMouseButtonDown(0))
+                    {
+                        enemySelected = enemy;
+                        battleUI.SetActive(true);
+                    }
+                }else
+                {
+                    enemy.GetComponent<SpriteRenderer>().color = Color.gray;
+                }
+            }
+        }
+    }
+    void distance()
+    {
+        mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
+
+    void enemyTurn()
+    {
+        if(state == States.EnemyTurn)
+        {
+            battleUI.SetActive(false);
+            turnText.text = "Enemy Turn";
+            foreach(GameObject enemy in SpawnedEnemies)
+            {
+                enemy.GetComponent<EnemyUnit>().atack();
+            }
+
+        }else if(state != States.PlayerTurn)
+        {
+            turnText.text = "";
+        }
+    }
+
+    void combat()
+    {
+        if(state == States.PlayerTurn || state == States.EnemyTurn)
+        {
+            if(SpawnedEnemies.Count == 0 && Player.GetComponent<PlayerUnit>().CurrentHealth > 0)
+            {
+                state = States.Won;
             }
         }
     }
 
 }
 
-[System.Serializable]
-public class EnemiePoints
-{
-    public Transform point;
-    public bool Occupied;
-}
+
