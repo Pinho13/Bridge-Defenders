@@ -3486,6 +3486,7 @@ MonoBehaviour:
   spawner: {fileID: 1215449824}
   pm: {fileID: 1175928949}
   cm: {fileID: 519420033}
+  playerUnit: {fileID: 1175928948}
   currentWaveCount: -1
   maxWaves: 16
   waveText: {fileID: 1057291024}
@@ -4256,27 +4257,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 100
   CurrentHealth: 100
-  playerAtacks:
-  - <AttackSprite>k__BackingField: {fileID: 0}
-    <AttackDamage>k__BackingField: 0
-    <attackPlace>k__BackingField: 0
-    <AreaDamage>k__BackingField: 0
-    AttackButton: {fileID: 0}
-    buttonImage: {fileID: 0}
-  - <AttackSprite>k__BackingField: {fileID: 0}
-    <AttackDamage>k__BackingField: 0
-    <attackPlace>k__BackingField: 0
-    <AreaDamage>k__BackingField: 0
-    AttackButton: {fileID: 0}
-    buttonImage: {fileID: 0}
-  - <AttackSprite>k__BackingField: {fileID: 0}
-    <AttackDamage>k__BackingField: 0
-    <attackPlace>k__BackingField: 0
-    <AreaDamage>k__BackingField: 0
-    AttackButton: {fileID: 0}
-    buttonImage: {fileID: 0}
-  SC: {fileID: 0}
-  EWM: {fileID: 0}
+  EWM: {fileID: 1013804929}
   fillImage: {fileID: 1297681605}
   slider: {fileID: 1943057682}
 --- !u!114 &1175928949
@@ -4314,23 +4295,26 @@ MonoBehaviour:
   manager: {fileID: 1013804929}
   currentEnemy: {fileID: 0}
   allAttacks:
-  - <AttackSprite>k__BackingField: {fileID: 0}
+  - <atackName>k__BackingField: 
+    <AttackSprite>k__BackingField: {fileID: 0}
     <AttackDamage>k__BackingField: 50
-    <attackPlace>k__BackingField: 0
+    <state>k__BackingField: 0
     <AreaDamage>k__BackingField: 0
-    AttackButton: {fileID: 0}
+    AttackButton: {fileID: 1605658488}
     buttonImage: {fileID: 0}
-  - <AttackSprite>k__BackingField: {fileID: 0}
-    <AttackDamage>k__BackingField: 50
-    <attackPlace>k__BackingField: 0
+  - <atackName>k__BackingField: 
+    <AttackSprite>k__BackingField: {fileID: 0}
+    <AttackDamage>k__BackingField: 30
+    <state>k__BackingField: 0
     <AreaDamage>k__BackingField: 0
-    AttackButton: {fileID: 0}
+    AttackButton: {fileID: 745128767}
     buttonImage: {fileID: 0}
-  - <AttackSprite>k__BackingField: {fileID: 0}
-    <AttackDamage>k__BackingField: 50
-    <attackPlace>k__BackingField: 0
+  - <atackName>k__BackingField: 
+    <AttackSprite>k__BackingField: {fileID: 0}
+    <AttackDamage>k__BackingField: 10
+    <state>k__BackingField: 0
     <AreaDamage>k__BackingField: 1
-    AttackButton: {fileID: 0}
+    AttackButton: {fileID: 1021383356}
     buttonImage: {fileID: 0}
   selectedAttacks: []
   attackButtons:

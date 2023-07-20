@@ -342,7 +342,7 @@ void Start()=>Init();
         {
             foreach(GameObject enemy in SpawnedEnemies)
             {
-                enemy.GetComponent<EnemyUnit>().Damaged=false;
+                
             }
             turnText.text = "Your Turn";
             foreach(GameObject enemy in SpawnedEnemies)

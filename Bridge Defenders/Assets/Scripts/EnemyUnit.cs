@@ -34,7 +34,7 @@ public class EnemyUnit : MonoBehaviour
     [Header("Damage Player")]
     private PlayerUnit Player;
     public float Damage;
-    public bool Damaged;
+
 
 
 
@@ -58,6 +58,7 @@ public class EnemyUnit : MonoBehaviour
     {
         MoveToPoint();
         healthBar();
+        atack();
     }
 
     void MoveToPoint()
@@ -91,10 +92,10 @@ public class EnemyUnit : MonoBehaviour
 
     public void atack()
     {
-        if(!Damaged)
+        if(combatSystem.turn == Turns.EnemyTurn)
         {
             Player.CurrentHealth -= Damage;
-            Damaged = true;
+            combatSystem.turn = Turns.PlayerTurn;
         }
     }
 
@@ -105,6 +106,7 @@ public class EnemyUnit : MonoBehaviour
             spriteRenderer.color = Color.black;
             if(Input.GetMouseButtonDown(0))
             {
+                combatSystem.currentEnemy = this;
                 combatSystem.battleUI.SetActive(true);
             }
         }

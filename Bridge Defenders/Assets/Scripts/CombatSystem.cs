@@ -38,7 +38,8 @@ public class CombatSystem : MonoBehaviour
     {
         selectedAttacks=new();
         if(allAttacks==null || allAttacks.Count == 0) return;
-        selectedAttacks = allAttacks.Where(x=>x.attackPlace>0).ToList();
+        selectedAttacks = allAttacks.Where(x=>x.state == AttackState.Equiped).ToList();
+        InitAttackButtons();
     }
 
     void InitAttackButtons()
@@ -66,8 +67,9 @@ public class CombatSystem : MonoBehaviour
         }
     }
 
-    void ManageButton(Button button)
+     void ManageButton(Button button)
     {
+        button.onClick.RemoveAllListeners();
         button.onClick.AddListener(delegate{OnButtonClicked(button);});
     }
 
@@ -76,15 +78,18 @@ public class CombatSystem : MonoBehaviour
         if(!attackDic.ContainsKey(button)) return;
 
         var attack = attackDic[button];
-        if (!attack.AreaDamage)
+        if (!attack.AreaDamage && turn == Turns.PlayerTurn)
         {
             currentEnemy.CurrentHealth -= attack.AttackDamage;
+            battleUI.SetActive(false);
+            turn = Turns.EnemyTurn;
         }
-        else
+        else if(turn == Turns.PlayerTurn)
         {
             foreach (EnemyUnit enemy in manager.SpawnedEnemies)
             {
                 enemy.CurrentHealth -= attack.AttackDamage;
+                battleUI.SetActive(false);
                 turn = Turns.EnemyTurn;
             }
         }
@@ -94,9 +99,10 @@ public class CombatSystem : MonoBehaviour
 [System.Serializable]
 public class PlayerAttacks
 {
+    [field: SerializeField] public string atackName { get; private set; }
     [field: SerializeField] public Sprite AttackSprite { get; private set; }
     [field: SerializeField] public float AttackDamage { get; private set; }
-    [field: SerializeField] public int attackPlace { get; private set; }
+    [field: SerializeField] public AttackState state{ get; private set; }
     [field: SerializeField] public bool AreaDamage { get; private set; }
 
     [field: SerializeField] public Button AttackButton;
@@ -109,4 +115,10 @@ public class PlayerAttacks
         if(buttonImage == null) buttonImage = AttackButton.GetComponent<Image>();
         buttonImage.sprite = AttackSprite;
     }
+}
+
+public enum AttackState 
+{
+     Equiped,
+     Unequipped 
 }

@@ -5,18 +5,32 @@ using UnityEngine.UI;
 
 public class PlayerUnit : MonoBehaviour
 {
+
+    [Header("Player Stats")]
     public float MaxHealth;
     public float CurrentHealth;
-    public List<PlayerAttacks> playerAtacks;
-    [SerializeField]private StateController SC;
+
+
+
+    [Header("References")]
+    CombatSystem combatSystem;
     [SerializeField]private EnemyWaveManager EWM;
 
+
+
+
+
+
+    [Header("HealthBar")]
     public Image fillImage;
     [SerializeField]private Slider slider;
 
+
+
+
     void Start()
     {
-
+        combatSystem = GetComponent<CombatSystem>();
     }
 
 
@@ -24,12 +38,14 @@ public class PlayerUnit : MonoBehaviour
     {
         HealthCap();
         healthBar();
+        noHealth();
     }
     void noHealth()
     {
         if(CurrentHealth <= 0)
         {
-            SC.state = States.Lost;
+            EWM.LoadLobby();
+            EWM.currentWaveCount = 0;
         }
     }
 

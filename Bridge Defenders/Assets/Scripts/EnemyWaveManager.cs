@@ -15,10 +15,11 @@ public class EnemyWaveManager : MonoBehaviour
     [Header("References")]
     [SerializeField]private PlayerMovement pm;
     [SerializeField]private CameraMovement cm;
+    [SerializeField] PlayerUnit playerUnit;
 
 
     [Header("Wave Settings")]
-    [SerializeField] int currentWaveCount = -1;
+    public int currentWaveCount = -1;
     [SerializeField] int maxWaves = 16;
     [SerializeField] TMP_Text waveText;
 
@@ -63,6 +64,7 @@ public class EnemyWaveManager : MonoBehaviour
     }
     void OnWaveEnd()
     {
+        combatSystem.battleUI.SetActive(false);
         switch(currentWaveCount)
         {
             case 3:
@@ -80,12 +82,14 @@ public class EnemyWaveManager : MonoBehaviour
         } 
         LoadWave();
     }
-    void LoadLobby()
+    public void LoadLobby()
     {
         cm.Movable[1] = true;
         pm.Movable[1] = true;
         pm.battle = false;
         pm.onPlace = false;
+        playerUnit.CurrentHealth = playerUnit.MaxHealth;
+        combatSystem.battleUI.SetActive(false);
         combatSystem.turn = Turns.OffBattle;
     }
     void LoadBattle()
