@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlaceToMove{InPlace, Lobby, Shop, Fight}
+
 public class PlayerMovement : MonoBehaviour
 {
+    public PlaceToMove placeToMove;
     [SerializeField]private Transform[] playerMovePoints;
     [SerializeField]private float velocity;
-    public bool[] Movable;
     public bool battle;
 
     public bool onPlace;
@@ -24,14 +26,11 @@ public class PlayerMovement : MonoBehaviour
 
     public void MoveToFight()
     {
-        if(Vector2.Distance(transform.position, playerMovePoints[0].position) > 1 && Movable[0])
+        if(placeToMove == PlaceToMove.Fight && transform.position != playerMovePoints[0].position)
         {
             battle = true;
-            transform.position = Vector3.Lerp(transform.position, playerMovePoints[0].position, velocity * Time.deltaTime);
-        }else if(Movable[0])
-        {
-            Movable[0] = false;
-        }else if(Vector2.Distance(transform.position, playerMovePoints[0].position) <= 1)
+            transform.position = Vector2.MoveTowards(transform.position, playerMovePoints[0].position, velocity * Time.deltaTime);
+        }else if(placeToMove == PlaceToMove.Fight)
         {
             onPlace = true;
         }
@@ -40,33 +39,27 @@ public class PlayerMovement : MonoBehaviour
 
     public void MoveToLobby()
     {
-        if(Vector2.Distance(transform.position, playerMovePoints[1].position) >= 1 && Movable[1])
+        if(placeToMove == PlaceToMove.Lobby && transform.position != playerMovePoints[1].position)
         {
             lobby();
-        }else if(Movable[1])
-        {
-            Movable[1] = false;
         }
     }
 
 
     public void MoveToShop()
     {
-        if(Vector2.Distance(transform.position, playerMovePoints[2].position) >= 1 && Movable[2])
+        if(placeToMove == PlaceToMove.Shop && transform.position != playerMovePoints[2].position)
         {
             shop();
-        }else if(Movable[2])
-        {
-            Movable[2] = false;
         }
     }
     public void lobby()
     {
-        transform.position = Vector3.Lerp(transform.position, playerMovePoints[1].position, velocity * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, playerMovePoints[1].position, velocity * Time.deltaTime);
     }
 
     public void shop()
     {
-        transform.position = Vector3.Lerp(transform.position, playerMovePoints[2].position, velocity * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, playerMovePoints[2].position, velocity * Time.deltaTime);
     }
 }

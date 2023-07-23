@@ -6,6 +6,9 @@ TagManager:
   tags:
   - SC
   - BattleUI
+  - Point
+  - PlayerPoint
+  - PlayerFight
   layers:
   - Default
   - TransparentFX
@@ -40,6 +43,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Shops
+    uniqueID: 4133127517
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

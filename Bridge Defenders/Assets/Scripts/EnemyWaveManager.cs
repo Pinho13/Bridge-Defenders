@@ -80,31 +80,43 @@ public class EnemyWaveManager : MonoBehaviour
             LoadLobby();
             return;
         } 
-        LoadWave();
+        WaitAndLoad();
     }
     public void LoadLobby()
     {
         cm.Movable[1] = true;
-        pm.Movable[1] = true;
+        pm.placeToMove = PlaceToMove.Lobby;
         pm.battle = false;
         pm.onPlace = false;
         playerUnit.CurrentHealth = playerUnit.MaxHealth;
         combatSystem.battleUI.SetActive(false);
         combatSystem.turn = Turns.OffBattle;
     }
+
     void LoadBattle()
     {
         cm.Movable[0] = true;
-        pm.Movable[0] = true;
+        pm.placeToMove = PlaceToMove.Fight;
         foreach(EnemiePoints place in places)
         {
             place.Occupied = false;
         }
         combatSystem.turn = Turns.PlayerTurn;
     }
-    public void LoadWave()
+    IEnumerator WaitForOnPlace()
     {
         LoadBattle();
+      yield return new WaitUntil(()=>pm.onPlace);
+      LoadWave();
+    }
+
+    public void WaitAndLoad()
+    {
+        StartCoroutine(WaitForOnPlace());
+    }
+
+    public void LoadWave()
+    {
         if(!pm.onPlace) return;
         ++currentWaveCount;
         waveText.text = "Wave: " + currentWaveCount;
@@ -114,6 +126,7 @@ public class EnemyWaveManager : MonoBehaviour
         for (int i = 0; i < currentEnemyCount; i++)
         {
             var enemy = enemyDic[currentDifficulty].GetEnemy();
+
             if(enemy==null) continue;
 
             var spawnedEnemy = Instantiate(enemy, spawner.position, Quaternion.identity);
