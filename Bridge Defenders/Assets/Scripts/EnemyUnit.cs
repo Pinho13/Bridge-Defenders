@@ -25,7 +25,7 @@ public class EnemyUnit : MonoBehaviour
     [Header("Health Bar")]
     [SerializeField]private GameObject healthbar;
     [SerializeField]private GameObject fullHealthBar;
-    [SerializeField]private float yBarSize;
+    private float xBarSize;
     public Action<EnemyUnit> onDeath;
 
 
@@ -51,6 +51,7 @@ public class EnemyUnit : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         Player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerUnit>();
         combatSystem = GameObject.FindGameObjectWithTag("Player").GetComponent<CombatSystem>();
+        xBarSize = healthbar.transform.localScale.x;
     }
 
 
@@ -86,7 +87,7 @@ public class EnemyUnit : MonoBehaviour
         if(CurrentHealth > 0)
         {
             fullHealthBar.SetActive(true);
-            healthbar.transform.localScale = new Vector3(((CurrentHealth * yBarSize) / MaxHealth), healthbar.transform.localScale.y, healthbar.transform.localScale.y);
+            healthbar.transform.localScale = new Vector3(((CurrentHealth * xBarSize) / MaxHealth), healthbar.transform.localScale.y, healthbar.transform.localScale.y);
         }
     }
 
@@ -117,7 +118,7 @@ public class EnemyUnit : MonoBehaviour
     {
         if(combatSystem.turn == Turns.PlayerTurn)
         {
-            spriteRenderer.color = Color.grey;
+            spriteRenderer.color = Color.white;
         }
     }
 }

@@ -36,14 +36,14 @@ public class EnemyWaveManager : MonoBehaviour
 
 
     
-    IEnumerator Start()
-    {
-        Init();
-        yield return new WaitUntil(()=>pm.onPlace);
-        LoadWave();
-    }
+    //IEnumerator Start()
+    //{
+    //    Init();
+        //yield return new WaitUntil(()=>pm.onPlace);
+        //LoadWave();
+    //}
 
-    void Init()
+    void Start()
     {
         waveText.text = "Wave: 0";
         currentWaveCount = -1;
@@ -84,7 +84,7 @@ public class EnemyWaveManager : MonoBehaviour
     }
     public void LoadLobby()
     {
-        cm.Movable[1] = true;
+        cm.cameraPlaces = CameraPlaces.Lobby;
         pm.placeToMove = PlaceToMove.Lobby;
         pm.battle = false;
         pm.onPlace = false;
@@ -95,7 +95,7 @@ public class EnemyWaveManager : MonoBehaviour
 
     void LoadBattle()
     {
-        cm.Movable[0] = true;
+        cm.cameraPlaces = CameraPlaces.Battle;
         pm.placeToMove = PlaceToMove.Fight;
         foreach(EnemiePoints place in places)
         {
@@ -106,8 +106,8 @@ public class EnemyWaveManager : MonoBehaviour
     IEnumerator WaitForOnPlace()
     {
         LoadBattle();
-      yield return new WaitUntil(()=>pm.onPlace);
-      LoadWave();
+        yield return new WaitUntil(()=>pm.onPlace);
+        LoadWave();
     }
 
     public void WaitAndLoad()

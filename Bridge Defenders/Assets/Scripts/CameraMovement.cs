@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CameraPlaces{Lobby, Battle}
+
 public class CameraMovement : MonoBehaviour
 {
     [Header("UI")]
@@ -15,7 +17,8 @@ public class CameraMovement : MonoBehaviour
     [SerializeField]private Transform Lobby;
     [SerializeField]private Transform Battle;
     [SerializeField]private float cameraVelocity;
-    public bool[] Movable;
+    public CameraPlaces cameraPlaces;
+    
 
     void Start()
     {
@@ -29,27 +32,21 @@ public class CameraMovement : MonoBehaviour
         cameraToLobby();
     }
 
-    public void cameraToBattle()
+    void cameraToBattle()
     {
-        if(Vector2.Distance(transform.position, Battle.position) > 1.5 && Movable[0])
+        if(cameraPlaces == CameraPlaces.Battle)
         {
             LobbyUI.SetActive(false);
-            transform.position = Vector3.Lerp(transform.position, Battle.position, cameraVelocity * Time.deltaTime);
-        }else if(Movable[0])
-        {
-            Movable[0] = false;
+            transform.position = Vector3.MoveTowards(transform.position, Battle.position, cameraVelocity * Time.deltaTime);
         }
     }
 
-    public void cameraToLobby()
+    void cameraToLobby()
     {
-        if(Vector2.Distance(transform.position, Lobby.position) > 1.5 && Movable[1])
+        if(cameraPlaces == CameraPlaces.Lobby)
         {
             LobbyUI.SetActive(true);
-            transform.position = Vector3.Lerp(transform.position, Lobby.position, cameraVelocity * Time.deltaTime);
-        }else if(Movable[1])
-        {
-            Movable[1] = false;
+            transform.position = Vector3.MoveTowards(transform.position, Lobby.position, cameraVelocity * Time.deltaTime);
         }
     }
 
