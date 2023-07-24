@@ -44,8 +44,7 @@ public class PlayerUnit : MonoBehaviour
     {
         if(CurrentHealth <= 0)
         {
-            EWM.LoadLobby();
-            EWM.currentWaveCount = 0;
+            EWM.Lost();
         }
     }
 

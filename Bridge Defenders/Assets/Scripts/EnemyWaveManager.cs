@@ -169,6 +169,18 @@ public class EnemyWaveManager : MonoBehaviour
     {
         Application.Quit();
     }
+
+    public void Lost()
+    {
+        LoadLobby();
+        currentWaveCount = -1;
+        waveText.text = "Wave: 0";
+        foreach(EnemyUnit enemy in SpawnedEnemies)
+        {
+            Destroy(enemy.gameObject);
+        }
+        SpawnedEnemies = new List<EnemyUnit>();
+    }
 }
 
 [System.Serializable]
