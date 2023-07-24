@@ -2,9 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerUnit : MonoBehaviour
 {
+    [Header("Dropables")]
+    public GameObject[] goldIngots;
+    public float currency;
+    [SerializeField] TMP_Text currencyText;
+
+
 
     [Header("Player Stats")]
     public float MaxHealth;
@@ -68,5 +75,10 @@ public class PlayerUnit : MonoBehaviour
         {
             CurrentHealth = MaxHealth;
         }
+    }
+
+    public void UpdateCurrencyText()
+    {
+        currencyText.text = "Currency: " + currency.ToString("0");
     }
 }

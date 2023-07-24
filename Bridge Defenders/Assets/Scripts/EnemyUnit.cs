@@ -36,6 +36,13 @@ public class EnemyUnit : MonoBehaviour
     public float Damage;
 
 
+    [Header("Dropables")]
+    [SerializeField] float gold;
+    [SerializeField] Vector2Int numberToSpawn;
+    [SerializeField] int currentSpawnNumber;
+
+
+
 
 
     [Header("Render")]
@@ -80,6 +87,13 @@ public class EnemyUnit : MonoBehaviour
         {
             CurrentHealth = 0;
             fullHealthBar.SetActive(false);
+            for(currentSpawnNumber = Random.Range(numberToSpawn.x, numberToSpawn.y); currentSpawnNumber > 0; currentSpawnNumber--)
+            {
+                var coin = Instantiate(Player.goldIngots[Random.Range(0, Player.goldIngots.Length)], transform.position + new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), 0), Quaternion.identity);
+                var CoinScript = coin.GetComponent<CoinScript>();
+                CoinScript.CarryingGold = gold/currentSpawnNumber;
+            }
+
             onDeath.Invoke(this);
             Destroy(this.gameObject);
         }

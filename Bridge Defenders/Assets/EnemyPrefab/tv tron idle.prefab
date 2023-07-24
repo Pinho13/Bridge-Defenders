@@ -375,3 +375,6 @@ MonoBehaviour:
   healthbar: {fileID: 4217118064562109902}
   fullHealthBar: {fileID: 3859013105841340398}
   Damage: 25
+  gold: 35
+  numberToSpawn: {x: 2, y: 5}
+  currentSpawnNumber: 0
