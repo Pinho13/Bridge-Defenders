@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
+using TMPro;
 
 public enum Turns{OffBattle, PlayerTurn, EnemyTurn}
 
@@ -11,6 +12,7 @@ public class CombatSystem : MonoBehaviour
     [Header("References")]
     [SerializeField]private EnemyWaveManager manager;
     public EnemyUnit currentEnemy;
+    [SerializeField] GameObject damageNumbers;
 
     [Header("Attacks")]
     [SerializeField] List<PlayerAttacks> allAttacks;
@@ -80,7 +82,11 @@ public class CombatSystem : MonoBehaviour
         var attack = attackDic[button];
         if (!attack.AreaDamage && turn == Turns.PlayerTurn)
         {
+            var enemyPos = currentEnemy.gameObject.transform.position;
             currentEnemy.CurrentHealth -= attack.AttackDamage;
+            GameObject number = Instantiate(damageNumbers, enemyPos + new Vector3(Random.Range(-1,1), Random.Range(-1,1), 0), Quaternion.identity);
+            number.transform.GetChild(0).GetComponent<TMP_Text>().text = attack.AttackDamage.ToString();
+            Destroy(number, 2);
             battleUI.SetActive(false);
             turn = Turns.EnemyTurn;
         }
@@ -89,6 +95,10 @@ public class CombatSystem : MonoBehaviour
             foreach (EnemyUnit enemy in manager.SpawnedEnemies)
             {
                 enemy.CurrentHealth -= attack.AttackDamage;
+                var enemyPos = enemy.gameObject.transform.position;
+                GameObject number = Instantiate(damageNumbers, enemyPos + new Vector3(Random.Range(-1,1), Random.Range(-1,1), 0), Quaternion.identity);
+                number.transform.GetChild(0).GetComponent<TMP_Text>().text = attack.AttackDamage.ToString();
+                Destroy(number, 2);
                 battleUI.SetActive(false);
                 turn = Turns.EnemyTurn;
             }
