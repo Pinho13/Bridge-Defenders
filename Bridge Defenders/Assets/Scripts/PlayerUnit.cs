@@ -31,6 +31,7 @@ public class PlayerUnit : MonoBehaviour
     [Header("HealthBar")]
     public Image fillImage;
     [SerializeField]private Slider slider;
+    [SerializeField] TMP_Text healthText;
 
 
 
@@ -57,6 +58,7 @@ public class PlayerUnit : MonoBehaviour
 
     void healthBar()
     {
+        healthText.text = CurrentHealth.ToString("0") + " / " + MaxHealth.ToString("0");
         if(slider.value <= slider.minValue)
         {
             fillImage.enabled = false;

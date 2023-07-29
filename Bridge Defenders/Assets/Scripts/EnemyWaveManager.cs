@@ -172,14 +172,7 @@ public class EnemyWaveManager : MonoBehaviour
 
     public void Lost()
     {
-        LoadLobby();
-        currentWaveCount = -1;
-        waveText.text = "Wave: 0";
-        foreach(EnemyUnit enemy in SpawnedEnemies)
-        {
-            Destroy(enemy.gameObject);
-        }
-        SpawnedEnemies = new List<EnemyUnit>();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
 

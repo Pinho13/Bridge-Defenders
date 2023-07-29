@@ -17,6 +17,7 @@ public class CombatSystem : MonoBehaviour
     [Header("Attacks")]
     [SerializeField] List<PlayerAttacks> allAttacks;
     [SerializeField] List<PlayerAttacks> selectedAttacks;
+    public float extraAtack;
     Dictionary<Button,PlayerAttacks> attackDic;
 
     [Header("UI Settings")]
@@ -84,9 +85,16 @@ public class CombatSystem : MonoBehaviour
         {
             var enemyPos = currentEnemy.gameObject.transform.position;
             currentEnemy.CurrentHealth -= attack.AttackDamage;
-            GameObject number = Instantiate(damageNumbers, enemyPos + new Vector3(Random.Range(-1,1), Random.Range(-1,1), 0), Quaternion.identity);
+            GameObject number = Instantiate(damageNumbers, enemyPos + new Vector3(Random.Range(-1.5f,1.5f), Random.Range(-1.5f,1.5f), 0), Quaternion.Euler( 0, 0,Random.Range(-10f, 10f)));
             number.transform.GetChild(0).GetComponent<TMP_Text>().text = attack.AttackDamage.ToString();
-            Destroy(number, 2);
+            if(extraAtack > 0)
+            {
+                currentEnemy.CurrentHealth -= extraAtack;
+                GameObject extraNumber = Instantiate(damageNumbers, enemyPos + new Vector3(Random.Range(-1.5f,1.5f), Random.Range(-1.5f,1.5f), 0), Quaternion.Euler( 0, 0,Random.Range(-10f, 10f)));
+                extraNumber.transform.GetChild(0).GetComponent<TMP_Text>().text = extraAtack.ToString();
+                extraNumber.transform.GetChild(0).GetComponent<TMP_Text>().color = Color.white;
+            }
+            //Destroy(number, 2);
             battleUI.SetActive(false);
             turn = Turns.EnemyTurn;
         }
@@ -96,9 +104,16 @@ public class CombatSystem : MonoBehaviour
             {
                 enemy.CurrentHealth -= attack.AttackDamage;
                 var enemyPos = enemy.gameObject.transform.position;
-                GameObject number = Instantiate(damageNumbers, enemyPos + new Vector3(Random.Range(-1,1), Random.Range(-1,1), 0), Quaternion.identity);
+                GameObject number = Instantiate(damageNumbers, enemyPos + new Vector3(Random.Range(-1.5f,1.5f), Random.Range(-1.5f,1.5f), 0), Quaternion.Euler( 0, 0,Random.Range(-10f, 10f)));
                 number.transform.GetChild(0).GetComponent<TMP_Text>().text = attack.AttackDamage.ToString();
-                Destroy(number, 2);
+                if(extraAtack > 0)
+                {
+                    enemy.CurrentHealth -= extraAtack;
+                    GameObject extraNumber = Instantiate(damageNumbers, enemyPos + new Vector3(Random.Range(-1.5f,1.5f), Random.Range(-1.5f,1.5f), 0), Quaternion.Euler( 0, 0,Random.Range(-10f, 10f)));
+                    extraNumber.transform.GetChild(0).GetComponent<TMP_Text>().text = extraAtack.ToString();
+                    extraNumber.transform.GetChild(0).GetComponent<TMP_Text>().color = Color.white;
+                }
+                //Destroy(number, 2);
                 battleUI.SetActive(false);
                 turn = Turns.EnemyTurn;
             }
